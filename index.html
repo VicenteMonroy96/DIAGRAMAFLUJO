@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagramas de Flujo - Presentación Interactiva</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome para iconos de interfaz -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        /* Animaciones suaves para transiciones de nodos SVG */
+        .flow-node {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .flow-node:hover {
+            filter: brightness(0.95);
+        }
+        .node-active {
+            filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.7));
+            transform: scale(1.03);
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+        .node-active-shape {
+            stroke: #2563eb !important;
+            stroke-width: 3.5px !important;
+        }
+        .node-visited-shape {
+            stroke: #059669 !important;
+            stroke-width: 2.5px !important;
+        }
+        .edge-path {
+            transition: stroke 0.4s ease, stroke-width 0.4s ease;
+        }
+        .edge-active {
+            stroke: #2563eb !important;
+            stroke-width: 3.5px !important;
+            stroke-dasharray: 8;
+            animation: dash 1s linear infinite;
+        }
+        .edge-visited {
+            stroke: #10b981 !important;
+            stroke-width: 2.5px !important;
+        }
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -16;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Barra de Navegación Superior (Ideal para proyector de clases) -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 p-2.5 rounded-xl">
+                    <i class="fa-solid fa-diagram-project text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight">Diagramas de Flujo</h1>
+                    <p class="text-xs text-slate-400">Recurso Interactivo de Aprendizaje</p>
+                </div>
+            </div>
+
+            <!-- Pestañas de Navegación -->
+            <nav class="flex flex-wrap justify-center gap-2 bg-slate-800 p-1.5 rounded-xl">
+                <button onclick="switchTab('concepto')" id="tab-concepto" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-blue-600 text-white shadow">
+                    1. Concepto y Usos
+                </button>
+                <button onclick="switchTab('figuras')" id="tab-figuras" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700">
+                    2. Simbología ANSI/ISO
+                </button>
+                <button onclick="switchTab('simulador')" id="tab-simulador" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-300 hover:text-white hover:bg-slate-700 flex items-center gap-2">
+                    <span>3. Simulador en Vivo</span>
+                    <span class="bg-emerald-500 text-slate-950 text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full">Interactivo</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- SECCIÓN 1: CONCEPTO Y USOS -->
+        <section id="section-concepto" class="tab-content space-y-8 animate-fade-in">
+            <!-- Tarjeta Principal de Definición -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-semibold mb-4">
+                    <i class="fa-solid fa-book-open"></i> Definición Fundamental
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4">
+                    ¿Qué es un Diagrama de Flujo?
+                </h2>
+                <p class="text-lg sm:text-xl text-slate-600 leading-relaxed">
+                    Un <strong class="text-slate-900 font-bold">diagrama de flujo</strong> es una representación gráfica de un algoritmo o proceso. Se utiliza en disciplinas como la <span class="text-blue-600 font-semibold">programación</span>, la <span class="text-blue-600 font-semibold">economía</span>, los <span class="text-blue-600 font-semibold">procesos industriales</span> y la <span class="text-blue-600 font-semibold">psicología cognitiva</span> para detallar los pasos y la secuencia de una actividad o sistema de forma visual.
+                </p>
+            </div>
+
+            <!-- ¿Para qué se puede utilizar? -->
+            <div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-amber-500"></i> ¿Para qué se puede utilizar?
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Uso 1 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex gap-4">
+                        <div class="bg-indigo-100 text-indigo-600 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-xl">
+                            <i class="fa-solid fa-file-lines"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-900 mb-1">Diseñar y documentar procesos</h4>
+                            <p class="text-slate-600">Permiten que cualquier persona entienda un procedimiento complejo rápidamente mediante una lectura visual.</p>
+                        </div>
+                    </div>
+
+                    <!-- Uso 2 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex gap-4">
+                        <div class="bg-rose-100 text-rose-600 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-xl">
+                            <i class="fa-solid fa-bug-slash"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-900 mb-1">Detectar errores</h4>
+                            <p class="text-slate-600">Al ver el flujo visualmente, es más sencillo encontrar cuellos de botella, bucles infinitos o pasos innecesarios.</p>
+                        </div>
+                    </div>
+
+                    <!-- Uso 3 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex gap-4">
+                        <div class="bg-emerald-100 text-emerald-600 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-xl">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-900 mb-1">Facilitar la comunicación</h4>
+                            <p class="text-slate-600">Sirven como lenguaje común entre diferentes áreas (por ejemplo, entre el equipo de negocios y el de desarrollo de software).</p>
+                        </div>
+                    </div>
+
+                    <!-- Uso 4 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex gap-4">
+                        <div class="bg-amber-100 text-amber-600 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-xl">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-900 mb-1">Capacitación</h4>
+                            <p class="text-slate-600">Son ideales para guiar a nuevos empleados o estudiantes en la ejecución de tareas paso a paso.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón de acción para pasar a figuras -->
+            <div class="flex justify-end pt-4">
+                <button onclick="switchTab('figuras')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition flex items-center gap-2">
+                    <span>Explorar las Figuras Estándar</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: FIGURAS Y SIMBOLOGÍA -->
+        <section id="section-figuras" class="tab-content hidden space-y-8">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">
+                    Figuras comunes para interpretar los diagramas
+                </h2>
+                <p class="text-slate-600 text-lg mb-6">
+                    Haz clic en cada símbolo estandarizado (norma <strong class="text-slate-800">ANSI/ISO</strong>) para analizar su función y ejemplos en clase.
+                </p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <!-- Lista de 5 Figuras -->
+                    <div class="lg:col-span-7 space-y-3" id="symbols-list">
+                        <!-- Generado dinámicamente por JS -->
+                    </div>
+
+                    <!-- Panel de Detalle Interactivo para Proyección -->
+                    <div class="lg:col-span-5 bg-slate-900 text-white rounded-2xl p-6 sm:p-8 sticky top-24 shadow-xl">
+                        <div class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">Detalle de Símbolo</div>
+                        <div id="symbol-preview-canvas" class="bg-slate-800 rounded-xl h-44 flex items-center justify-center mb-6 border border-slate-700">
+                            <!-- SVG de la figura seleccionada -->
+                        </div>
+                        <h3 id="symbol-detail-title" class="text-2xl font-bold mb-2">Óvalo / Elipse (Inicio / Fin)</h3>
+                        <p id="symbol-detail-desc" class="text-slate-300 leading-relaxed mb-4">
+                            Representa el punto de partida y de finalización de un proceso.
+                        </p>
+                        <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+                            <span class="text-xs font-semibold text-emerald-400 uppercase block mb-1">Ejemplo práctico:</span>
+                            <p id="symbol-detail-example" class="text-sm text-slate-200 font-medium">"Inicio" del algoritmo o "Disfrutar el café / Fin".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between pt-2">
+                <button onclick="switchTab('concepto')" class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold px-6 py-3 rounded-xl transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Anterior: Concepto</span>
+                </button>
+                <button onclick="switchTab('simulador')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition flex items-center gap-2">
+                    <span>Probar el Simulador Interactivo</span>
+                    <i class="fa-solid fa-play"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: SIMULADOR INTERACTIVO EN VIVO -->
+        <section id="section-simulador" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-4 mb-6">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-xs font-bold uppercase mb-1">
+                            Ejemplo Cotidiano Interactivo
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">
+                            Proceso: Comprar un Café en una Cafetería
+                        </h2>
+                    </div>
+                    <button onclick="resetSimulation()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Reiniciar Simulación</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <!-- Lienzo SVG del Diagrama de Flujo (Limpio, sin emojis, lógica corregida) -->
+                    <div class="lg:col-span-7 bg-slate-50 rounded-2xl border border-slate-200 p-4 flex justify-center overflow-x-auto">
+                        <svg id="flowchart-svg" viewBox="0 0 620 760" class="w-full max-w-[600px] h-auto select-none">
+                            <defs>
+                                <!-- Punta de flecha estándar -->
+                                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
+                                </marker>
+                                <!-- Punta de flecha activa (azul) -->
+                                <marker id="arrow-active" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb" />
+                                </marker>
+                                <!-- Punta de flecha visitada (verde) -->
+                                <marker id="arrow-visited" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981" />
+                                </marker>
+                            </defs>
+
+                            <!-- LÍNEAS DE FLUJO (FLECHAS) -->
+                            <!-- Inicio -> Llegar -->
+                            <path id="edge-start-arrive" class="edge-path" d="M 260 65 L 260 100" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+                            
+                            <!-- Llegar -> ¿Hay fila? -->
+                            <path id="edge-arrive-queue" class="edge-path" d="M 260 155 L 260 190" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+                            
+                            <!-- ¿Hay fila? (Sí) -> Esperar en la fila -->
+                            <path id="edge-queue-yes" class="edge-path" d="M 345 235 L 420 235" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+                            <text x="372" y="226" font-size="13" font-weight="700" fill="#334155">Sí</text>
+
+                            <!-- Esperar en la fila -> Pedir el café y pagar (Lógica corregida: avanza al pedido) -->
+                            <path id="edge-wait-order" class="edge-path" d="M 495 262 L 495 340 L 345 340" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+                            <!-- ¿Hay fila? (No) -> Pedir el café y pagar -->
+                            <path id="edge-queue-no" class="edge-path" d="M 260 280 L 260 312" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+                            <text x="270" y="300" font-size="13" font-weight="700" fill="#334155">No</text>
+
+                            <!-- Pedir el café -> ¿Para llevar? -->
+                            <path id="edge-order-togo" class="edge-path" d="M 260 368 L 260 402" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+                            <!-- ¿Para llevar? (Sí) -> Vaso de papel -->
+                            <path id="edge-togo-yes" class="edge-path" d="M 175 447 L 130 447 L 130 505" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+                            <text x="142" y="438" font-size="13" font-weight="700" fill="#334155">Sí</text>
+
+                            <!-- ¿Para llevar? (No) -> Taza -->
+                            <path id="edge-togo-no" class="edge-path" d="M 345 447 L 390 447 L 390 505" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+                            <text x="360" y="438" font-size="13" font-weight="700" fill="#334155">No</text>
+
+                            <!-- Vaso de papel -> Recibir el café -->
+                            <path id="edge-cup-receive" class="edge-path" d="M 130 565 L 130 622 L 178 622" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+                            <!-- Taza -> Recibir el café -->
+                            <path id="edge-mug-receive" class="edge-path" d="M 390 565 L 390 622 L 342 622" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+                            <!-- Recibir el café -> Fin -->
+                            <path id="edge-receive-end" class="edge-path" d="M 260 650 L 260 682" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+
+
+                            <!-- NODOS DEL DIAGRAMA (FIGURAS ANSI/ISO) -->
+                            
+                            <!-- 1. Inicio (Óvalo) -->
+                            <g id="node-start" class="flow-node" onclick="inspectNode('start')">
+                                <rect x="190" y="15" width="140" height="50" rx="25" fill="#a7d7c5" stroke="#334155" stroke-width="2" />
+                                <text x="260" y="45" text-anchor="middle" font-size="15" font-weight="600" fill="#0f172a">Inicio</text>
+                            </g>
+
+                            <!-- 2. Llegar a la cafetería (Paralelogramo - Entrada/Acción inicial) -->
+                            <g id="node-arrive" class="flow-node" onclick="inspectNode('arrive')">
+                                <polygon points="190,100 350,100 330,155 170,155" fill="#bae6fd" stroke="#334155" stroke-width="2" />
+                                <text x="260" y="124" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">Llegar a la</text>
+                                <text x="260" y="142" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">cafetería</text>
+                            </g>
+
+                            <!-- 3. ¿Hay fila? (Rombo - Decisión) -->
+                            <g id="node-queue" class="flow-node" onclick="inspectNode('queue')">
+                                <polygon points="260,190 345,235 260,280 175,235" fill="#93c5fd" stroke="#334155" stroke-width="2" />
+                                <text x="260" y="240" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">¿Hay fila?</text>
+                            </g>
+
+                            <!-- 4. Esperar en la fila (Rectángulo - Proceso) -->
+                            <g id="node-wait" class="flow-node" onclick="inspectNode('wait')">
+                                <rect x="420" y="208" width="150" height="54" rx="6" fill="#bfdbfe" stroke="#334155" stroke-width="2" />
+                                <text x="495" y="232" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">Esperar en la</text>
+                                <text x="495" y="250" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">fila</text>
+                            </g>
+
+                            <!-- 5. Pedir el café y pagar (Paralelogramo - Entrada/Salida) -->
+                            <g id="node-order" class="flow-node" onclick="inspectNode('order')">
+                                <polygon points="190,312 350,312 330,368 170,368" fill="#d9f99d" stroke="#334155" stroke-width="2" />
+                                <text x="260" y="336" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">Pedir el café</text>
+                                <text x="260" y="354" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">y pagar</text>
+                            </g>
+
+                            <!-- 6. ¿Para llevar? (Rombo - Decisión) -->
+                            <g id="node-togo" class="flow-node" onclick="inspectNode('togo')">
+                                <polygon points="260,402 345,447 260,492 175,447" fill="#fcd34d" stroke="#334155" stroke-width="2" />
+                                <text x="260" y="443" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">¿Para</text>
+                                <text x="260" y="460" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">llevar?</text>
+                            </g>
+
+                            <!-- 7A. Vaso de papel (Rectángulo - Proceso) -->
+                            <g id="node-cup" class="flow-node" onclick="inspectNode('cup')">
+                                <rect x="40" y="505" width="180" height="60" rx="6" fill="#fde68a" stroke="#334155" stroke-width="2" />
+                                <text x="130" y="531" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0f172a">El barista lo sirve</text>
+                                <text x="130" y="549" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0f172a">en vaso de papel</text>
+                            </g>
+
+                            <!-- 7B. Taza (Rectángulo - Proceso) -->
+                            <g id="node-mug" class="flow-node" onclick="inspectNode('mug')">
+                                <rect x="300" y="505" width="180" height="60" rx="6" fill="#fde68a" stroke="#334155" stroke-width="2" />
+                                <text x="390" y="531" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0f172a">El barista lo sirve</text>
+                                <text x="390" y="549" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0f172a">en taza</text>
+                            </g>
+
+                            <!-- 8. Recibir el café (Paralelogramo - Salida) -->
+                            <g id="node-receive" class="flow-node" onclick="inspectNode('receive')">
+                                <polygon points="190,595 350,595 330,650 170,650" fill="#fecaca" stroke="#334155" stroke-width="2" />
+                                <text x="260" y="627" text-anchor="middle" font-size="14" font-weight="600" fill="#0f172a">Recibir el café</text>
+                            </g>
+
+                            <!-- 9. Fin (Óvalo) -->
+                            <g id="node-end" class="flow-node" onclick="inspectNode('end')">
+                                <rect x="180" y="682" width="160" height="56" rx="28" fill="#fca5a5" stroke="#334155" stroke-width="2" />
+                                <text x="260" y="707" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">Disfrutar el café</text>
+                                <text x="260" y="725" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">Fin</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- Panel de Control de Clase (Derecha) -->
+                    <div class="lg:col-span-5 flex flex-col gap-5">
+                        <!-- Tarjeta de Estado Actual -->
+                        <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-lg">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-bold uppercase tracking-wider text-blue-400">Paso Actual en Ejecución</span>
+                                <span id="step-badge" class="bg-blue-600/30 border border-blue-500/40 text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
+                                    Óvalo (Inicio)
+                                </span>
+                            </div>
+                            <h3 id="sim-title" class="text-2xl font-bold mb-2">Inicio del Proceso</h3>
+                            <p id="sim-description" class="text-slate-300 text-base leading-relaxed mb-6">
+                                Todo diagrama de flujo comienza con un símbolo de Inicio (Óvalo). Presiona "Avanzar Paso" para iniciar la simulación en clase.
+                            </p>
+
+                            <!-- Controles Dinámicos (Botón Avanzar o Botones de Decisión Sí/No) -->
+                            <div id="sim-controls" class="space-y-3">
+                                <button onclick="advanceStep()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-lg">
+                                    <span>Avanzar Paso</span>
+                                    <i class="fa-solid fa-forward-step"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Registro de Ejecución (Log de clase) -->
+                        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-5 flex-grow">
+                            <h4 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-emerald-600"></i> Recorrido del Algoritmo
+                            </h4>
+                            <ul id="execution-log" class="space-y-2 text-sm text-slate-600 max-h-56 overflow-y-auto pr-1">
+                                <!-- Se llena dinámicamente -->
+                            </ul>
+                        </div>
+
+                        <!-- Tip pedagógico -->
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-900 flex gap-3">
+                            <i class="fa-solid fa-circle-info text-amber-600 mt-0.5 text-base"></i>
+                            <p>
+                                <strong>Tip para la clase:</strong> Puedes hacer clic directamente sobre cualquier figura del diagrama para explicar qué símbolo ANSI/ISO representa.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // ==========================================
+        // 1. GESTIÓN DE PESTAÑAS DE NAVEGACIÓN
+        // ==========================================
+        function switchTab(tabId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Mostrar sección seleccionada
+            document.getElementById(`section-${tabId}`).classList.remove('hidden');
+
+            // Actualizar estilos de botones
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white', 'shadow');
+                btn.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-slate-700');
+            });
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.remove('text-slate-300', 'hover:text-white', 'hover:bg-slate-700');
+            activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow');
+        }
+
+        // ==========================================
+        // 2. DATOS Y LÓGICA DE FIGURAS ANSI/ISO
+        // ==========================================
+        const symbolsData = [
+            {
+                id: 'ovalo',
+                name: '1. Óvalo / Elipse (Inicio / Fin)',
+                shortName: 'Óvalo / Elipse',
+                desc: 'Representa el punto de partida y de finalización de un proceso.',
+                example: '"Inicio" del proceso o "Disfrutar el café / Fin".',
+                svg: `<svg viewBox="0 0 220 100" class="w-48 h-24">
+                        <rect x="20" y="20" width="180" height="60" rx="30" fill="#a7d7c5" stroke="#ffffff" stroke-width="3"/>
+                        <text x="110" y="55" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">Inicio / Fin</text>
+                      </svg>`
+            },
+            {
+                id: 'rectangulo',
+                name: '2. Rectángulo (Proceso)',
+                shortName: 'Rectángulo',
+                desc: 'Indica una acción, tarea o una operación de cómputo (por ejemplo, "Calcular total" o "Buscar artículo").',
+                example: '"Esperar en la fila" o "El barista lo sirve en taza".',
+                svg: `<svg viewBox="0 0 220 100" class="w-48 h-24">
+                        <rect x="20" y="20" width="180" height="60" rx="6" fill="#fde68a" stroke="#ffffff" stroke-width="3"/>
+                        <text x="110" y="55" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">Proceso / Acción</text>
+                      </svg>`
+            },
+            {
+                id: 'rombo',
+                name: '3. Rombo (Decisión)',
+                shortName: 'Rombo',
+                desc: 'Señala un punto donde se toma una decisión. Suele tener preguntas de "Sí" o "No" y de ahí se desprenden diferentes caminos.',
+                example: '"¿Hay fila?" o "¿Para llevar?" (Bifurca el camino en Sí / No).',
+                svg: `<svg viewBox="0 0 220 110" class="w-48 h-28">
+                        <polygon points="110,10 200,55 110,100 20,55" fill="#93c5fd" stroke="#ffffff" stroke-width="3"/>
+                        <text x="110" y="60" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">¿Decisión?</text>
+                      </svg>`
+            },
+            {
+                id: 'paralelogramo',
+                name: '4. Paralelogramo (Entrada / Salida)',
+                shortName: 'Paralelogramo',
+                desc: 'Representa el ingreso o la salida de datos o elementos del sistema (por ejemplo, "Introducir contraseña" o "Imprimir ticket").',
+                example: '"Pedir el café y pagar" (Entrada) o "Recibir el café" (Salida).',
+                svg: `<svg viewBox="0 0 220 100" class="w-48 h-24">
+                        <polygon points="45,20 205,20 175,80 15,80" fill="#d9f99d" stroke="#ffffff" stroke-width="3"/>
+                        <text x="110" y="55" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">Entrada / Salida</text>
+                      </svg>`
+            },
+            {
+                id: 'flechas',
+                name: '5. Flechas (Línea de flujo)',
+                shortName: 'Línea de flujo',
+                desc: 'Conectan las figuras e indican el orden y la dirección del flujo del proceso.',
+                example: 'Guían la lectura paso a paso desde arriba hacia abajo o hacia las bifurcaciones.',
+                svg: `<svg viewBox="0 0 220 100" class="w-48 h-24">
+                        <defs>
+                            <marker id="demo-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                                <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8" />
+                            </marker>
+                        </defs>
+                        <line x1="30" y1="50" x2="185" y2="50" stroke="#38bdf8" stroke-width="4" marker-end="url(#demo-arrow)" />
+                      </svg>`
+            }
+        ];
+
+        function initSymbolsSection() {
+            const listContainer = document.getElementById('symbols-list');
+            listContainer.innerHTML = '';
+
+            symbolsData.forEach((sym, index) => {
+                const card = document.createElement('div');
+                card.id = `sym-card-${sym.id}`;
+                card.className = `p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between gap-4 ${
+                    index === 0 ? 'border-blue-600 bg-blue-50/60 shadow-sm' : 'border-slate-200 bg-white hover:border-blue-300'
+                }`;
+                card.onclick = () => selectSymbol(sym.id);
+
+                card.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-lg">${sym.name}</h4>
+                        <p class="text-slate-600 text-sm mt-0.5 line-clamp-2">${sym.desc}</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-400"></i>
+                `;
+                listContainer.appendChild(card);
+            });
+
+            selectSymbol('ovalo');
+        }
+
+        function selectSymbol(id) {
+            const sym = symbolsData.find(s => s.id === id);
+            if (!sym) return;
+
+            // Resaltar tarjeta seleccionada
+            symbolsData.forEach(s => {
+                const el = document.getElementById(`sym-card-${s.id}`);
+                if (s.id === id) {
+                    el.className = 'p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between gap-4 border-blue-600 bg-blue-50/60 shadow-sm';
+                } else {
+                    el.className = 'p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between gap-4 border-slate-200 bg-white hover:border-blue-300';
+                }
+            });
+
+            // Actualizar panel derecho
+            document.getElementById('symbol-preview-canvas').innerHTML = sym.svg;
+            document.getElementById('symbol-detail-title').textContent = sym.name;
+            document.getElementById('symbol-detail-desc').textContent = sym.desc;
+            document.getElementById('symbol-detail-example').textContent = sym.example;
+        }
+
+        // ==========================================
+        // 3. SIMULADOR INTERACTIVO DE FLUJO
+        // ==========================================
+        const flowSteps = {
+            start: {
+                title: 'Inicio del Proceso',
+                symbolType: 'Óvalo (Inicio)',
+                desc: 'Todo diagrama de flujo comienza con un símbolo de Inicio (Óvalo). Marca el punto exacto donde arranca el algoritmo.',
+                type: 'linear',
+                next: 'arrive',
+                edgeToNext: 'edge-start-arrive'
+            },
+            arrive: {
+                title: 'Llegar a la cafetería',
+                symbolType: 'Paralelogramo (Entrada)',
+                desc: 'El cliente ingresa al establecimiento. Esta figura indica el punto de entrada al sistema de atención.',
+                type: 'linear',
+                next: 'queue',
+                edgeToNext: 'edge-arrive-queue'
+            },
+            queue: {
+                title: 'Decisión: ¿Hay fila?',
+                symbolType: 'Rombo (Decisión)',
+                desc: 'Evaluamos una condición lógica. Pregunta a la clase: ¿Hay personas esperando antes que nosotros? Elige un camino:',
+                type: 'decision',
+                options: [
+                    { label: 'Sí (Hay fila)', next: 'wait', edge: 'edge-queue-yes', style: 'bg-amber-600 hover:bg-amber-500' },
+                    { label: 'No (Caja libre)', next: 'order', edge: 'edge-queue-no', style: 'bg-emerald-600 hover:bg-emerald-500' }
+                ]
+            },
+            wait: {
+                title: 'Esperar en la fila',
+                symbolType: 'Rectángulo (Proceso)',
+                desc: 'Como la respuesta fue "Sí", ejecutamos la acción de esperar nuestro turno. Una vez que avanza la fila, pasamos directamente a pedir.',
+                type: 'linear',
+                next: 'order',
+                edgeToNext: 'edge-wait-order'
+            },
+            order: {
+                title: 'Pedir el café y pagar',
+                symbolType: 'Paralelogramo (Entrada / Salida)',
+                desc: 'Intercambio de información y pago en caja: ingresamos nuestra orden y entregamos el dinero.',
+                type: 'linear',
+                next: 'togo',
+                edgeToNext: 'edge-order-togo'
+            },
+            togo: {
+                title: 'Decisión: ¿Para llevar?',
+                symbolType: 'Rombo (Decisión)',
+                desc: 'Segunda bifurcación lógica del proceso. Dependiendo de la respuesta del cliente, el barista ejecutará un proceso distinto:',
+                type: 'decision',
+                options: [
+                    { label: 'Sí (Para llevar)', next: 'cup', edge: 'edge-togo-yes', style: 'bg-blue-600 hover:bg-blue-500' },
+                    { label: 'No (Tomar aquí)', next: 'mug', edge: 'edge-togo-no', style: 'bg-indigo-600 hover:bg-indigo-500' }
+                ]
+            },
+            cup: {
+                title: 'Servir en vaso de papel',
+                symbolType: 'Rectángulo (Proceso)',
+                desc: 'El barista prepara la bebida en un envase desechable con tapa para transportar.',
+                type: 'linear',
+                next: 'receive',
+                edgeToNext: 'edge-cup-receive'
+            },
+            mug: {
+                title: 'Servir en taza',
+                symbolType: 'Rectángulo (Proceso)',
+                desc: 'El barista prepara la bebida en una taza de cerámica para consumir dentro del local.',
+                type: 'linear',
+                next: 'receive',
+                edgeToNext: 'edge-mug-receive'
+            },
+            receive: {
+                title: 'Recibir el café',
+                symbolType: 'Paralelogramo (Salida)',
+                desc: 'Ambos caminos convergen aquí. El sistema entrega el producto terminado al cliente (Salida del proceso).',
+                type: 'linear',
+                next: 'end',
+                edgeToNext: 'edge-receive-end'
+            },
+            end: {
+                title: 'Disfrutar el café / Fin',
+                symbolType: 'Óvalo (Fin)',
+                desc: '¡Proceso completado con éxito! El óvalo final indica que el algoritmo ha terminado su ejecución.',
+                type: 'end'
+            }
+        };
+
+        let currentNodeId = 'start';
+        let visitedNodes = new Set(['start']);
+        let visitedEdges = new Set();
+
+        function renderSimulationState() {
+            const step = flowSteps[currentNodeId];
+
+            // Actualizar textos del panel de control
+            document.getElementById('step-badge').textContent = step.symbolType;
+            document.getElementById('sim-title').textContent = step.title;
+            document.getElementById('sim-description').textContent = step.desc;
+
+            // Actualizar botones de control
+            const controlsContainer = document.getElementById('sim-controls');
+            controlsContainer.innerHTML = '';
+
+            if (step.type === 'linear') {
+                const btn = document.createElement('button');
+                btn.className = 'w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-lg';
+                btn.innerHTML = `<span>Avanzar Paso</span> <i class="fa-solid fa-forward-step"></i>`;
+                btn.onclick = () => transitionTo(step.next, step.edgeToNext);
+                controlsContainer.appendChild(btn);
+            } else if (step.type === 'decision') {
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-2 gap-3';
+                step.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = `${opt.style} text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-base`;
+                    btn.innerHTML = `<span>${opt.label}</span>`;
+                    btn.onclick = () => transitionTo(opt.next, opt.edge, opt.label);
+                    grid.appendChild(btn);
+                });
+                controlsContainer.appendChild(grid);
+            } else if (step.type === 'end') {
+                const btn = document.createElement('button');
+                btn.className = 'w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-lg';
+                btn.innerHTML = `<i class="fa-solid fa-rotate-right"></i> <span>Volver a Empezar</span>`;
+                btn.onclick = resetSimulation;
+                controlsContainer.appendChild(btn);
+            }
+
+            // Actualizar estilos visuales en el SVG
+            Object.keys(flowSteps).forEach(nodeId => {
+                const group = document.getElementById(`node-${nodeId}`);
+                const shape = group.querySelector('rect, polygon');
+                group.classList.remove('node-active');
+                shape.classList.remove('node-active-shape', 'node-visited-shape');
+
+                if (nodeId === currentNodeId) {
+                    group.classList.add('node-active');
+                    shape.classList.add('node-active-shape');
+                } else if (visitedNodes.has(nodeId)) {
+                    shape.classList.add('node-visited-shape');
+                }
+            });
+
+            // Actualizar flechas en el SVG
+            document.querySelectorAll('.edge-path').forEach(edge => {
+                edge.classList.remove('edge-active', 'edge-visited');
+                edge.setAttribute('marker-end', 'url(#arrow)');
+                if (visitedEdges.has(edge.id)) {
+                    edge.classList.add('edge-visited');
+                    edge.setAttribute('marker-end', 'url(#arrow-visited)');
+                }
+            });
+        }
+
+        function transitionTo(nextNodeId, edgeId, decisionLabel = null) {
+            if (edgeId) {
+                visitedEdges.add(edgeId);
+            }
+            currentNodeId = nextNodeId;
+            visitedNodes.add(nextNodeId);
+
+            // Agregar al historial de recorrido
+            const step = flowSteps[nextNodeId];
+            addLogEntry(step.title, step.symbolType, decisionLabel);
+
+            renderSimulationState();
+
+            // Resaltar brevemente la flecha recién transitada
+            if (edgeId) {
+                const edgeEl = document.getElementById(edgeId);
+                if (edgeEl) {
+                    edgeEl.classList.add('edge-active');
+                    edgeEl.setAttribute('marker-end', 'url(#arrow-active)');
+                }
+            }
+        }
+
+        function addLogEntry(title, symbolType, decisionLabel) {
+            const logList = document.getElementById('execution-log');
+            const li = document.createElement('li');
+            li.className = 'flex items-start gap-2.5 bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs';
+            
+            const decisionBadge = decisionLabel 
+                ? `<span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded ml-1">Decisión: ${decisionLabel}</span>` 
+                : '';
+
+            li.innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 shrink-0"></span>
+                <div>
+                    <div class="font-semibold text-slate-800">${title} ${decisionBadge}</div>
+                    <div class="text-xs text-slate-500">${symbolType}</div>
+                </div>
+            `;
+            logList.appendChild(li);
+            logList.scrollTop = logList.scrollHeight;
+        }
+
+        function resetSimulation() {
+            currentNodeId = 'start';
+            visitedNodes = new Set(['start']);
+            visitedEdges = new Set();
+            const logList = document.getElementById('execution-log');
+            logList.innerHTML = '';
+            addLogEntry(flowSteps.start.title, flowSteps.start.symbolType, null);
+            renderSimulationState();
+        }
+
+        // Permitir hacer clic en cualquier nodo del diagrama para inspeccionarlo en clase
+        function inspectNode(nodeId) {
+            const step = flowSteps[nodeId];
+            if (!step) return;
+            currentNodeId = nodeId;
+            visitedNodes.add(nodeId);
+            addLogEntry(`Inspección manual: ${step.title}`, step.symbolType, null);
+            renderSimulationState();
+        }
+
+        // Inicialización al cargar la página
+        window.onload = function() {
+            initSymbolsSection();
+            resetSimulation();
+        };
+    </script>
+</body>
+</html>
